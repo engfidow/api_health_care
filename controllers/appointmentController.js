@@ -23,15 +23,15 @@ exports.createAppointment = async (req, res) => {
       return res.status(409).json({ message: 'An appointment already exists for this doctor at this time.' });
     }
 
-     const waafiResponse = await payByWaafiPay({
-          phone: phone,
-          amount: price,
-          merchantUid: process.env.merchantUid,
-          apiUserId: process.env.apiUserId,
-          apiKey: process.env.apiKey,
-        });
+    //  const waafiResponse = await payByWaafiPay({
+    //       phone: phone,
+    //       amount: 0.01,
+    //       merchantUid: process.env.merchantUid,
+    //       apiUserId: process.env.apiUserId,
+    //       apiKey: process.env.apiKey,
+    //     });
        
-        if (waafiResponse.status) {
+    //     if (waafiResponse.status) {
 
     const newAppointment = new Appointment({
       userId,
@@ -40,18 +40,19 @@ exports.createAppointment = async (req, res) => {
       reason,
       phone,
       appointmentprice: price,
+      status: 'confirmed'
     });
 
     await newAppointment.save();
     res.status(201).json({ message: 'Appointment created successfully', appointment: newAppointment });
-     } else {
-          // Handling payment failure
-          return res.status(400).send({
-            status: "failed",
-            message: `${waafiResponse.error}` ?? "Payment Failed Try Again",
-          });
+    //  } else {
+    //       // Handling payment failure
+    //       return res.status(400).send({
+    //         status: "failed",
+    //         message: `${waafiResponse.error}` ?? "Payment Failed Try Again",
+    //       });
          
-        }
+    //     }
   } catch (error) {
     console.error('Create Appointment Error:', error);
     res.status(500).json({ message: 'Server error' });

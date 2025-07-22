@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema({
     required: true
   },
   image: { type: String },
+  status: { type: String, default: 'active' },
   createdAt: { type: Date, default: Date.now }
 });
 
