@@ -1,12 +1,14 @@
-import express from 'express';
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
-import cors from 'cors';
-import path from 'path';
-import userRoutes from './routes/userRoutes.js';
-import doctorRoutes from './routes/doctorRoutes.js';
-import appointmentRoutes from './routes/appointmentRoutes.js';
-import dashboardRoutes from './routes/dashboardRoutes.js';
+const express = require('express');
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+const cors = require('cors');
+const path = require('path');
+
+// Route imports (converted to CommonJS)
+const userRoutes = require('./routes/userRoutes.js');
+const doctorRoutes = require('./routes/doctorRoutes.js');
+const appointmentRoutes = require('./routes/appointmentRoutes.js');
+const dashboardRoutes = require('./routes/dashboardRoutes.js');
 
 
 dotenv.config();

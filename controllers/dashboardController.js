@@ -1,5 +1,8 @@
-import Appointment from '../models/appointment.js';
-import Doctor from '../models/Doctor.js';
+
+
+const Appointment = require('../models/appointment.js');
+
+const Doctor = require('../models/Doctor.js');
 
 const getDashboardData = async () => {
   try {
@@ -217,7 +220,9 @@ const getTopDoctorsData = async () => {
   }
 };
 
-export const getDashboard = async (req, res) => {
+
+
+exports.getDashboard = async (req, res) => {
   try {
     const dashboardData = await getDashboardData();
     res.json(dashboardData);
@@ -227,5 +232,83 @@ export const getDashboard = async (req, res) => {
       error: 'Failed to fetch dashboard data',
       details: process.env.NODE_ENV === 'development' ? err.message : undefined
     });
+  }
+};
+
+
+exports.getDoctorDashboard = async (req, res) => {
+  try {
+    const { userId } = req.query;
+    if (!userId) return res.status(400).json({ message: 'Missing userId' });
+
+    // Find doctor document
+    const doctor = await Doctor.findOne({ userId });
+    if (!doctor) return res.status(404).json({ message: 'Doctor not found' });
+
+    const doctorId = doctor._id;
+
+    // Get total appointments
+    const totalAppointments = await Appointment.countDocuments({ doctorId });
+
+    // Total revenue
+    const revenueAgg = await Appointment.aggregate([
+      { $match: { doctorId } },
+      {
+        $addFields: {
+          numericPrice: {
+            $convert: {
+              input: "$appointmentprice",
+              to: "double",
+              onError: 0,
+              onNull: 0
+            }
+          }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: "$numericPrice" },
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+    const revenue = revenueAgg[0] || { total: 0, count: 0 };
+
+    // Bar chart: Appointments per time range
+    const now = new Date();
+    const startOfDay = new Date(now.setHours(0, 0, 0, 0));
+    const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const startOfYear = new Date(now.getFullYear(), 0, 1);
+
+    const ranges = [
+      { name: 'Today', start: startOfDay },
+      { name: 'This Week', start: startOfWeek },
+      { name: 'This Month', start: startOfMonth },
+      { name: 'This Year', start: startOfYear },
+      { name: 'All Time', start: new Date(0) }
+    ];
+
+    const counts = await Promise.all(
+      ranges.map(r =>
+        Appointment.countDocuments({ doctorId, date: { $gte: r.start } })
+      )
+    );
+
+    res.json({
+      summary: {
+        totalAppointments,
+        totalRevenue: revenue.total,
+        paidAppointments: revenue.count,
+      },
+      barChartData: {
+        labels: ranges.map(r => r.name),
+        values: counts
+      }
+    });
+  } catch (error) {
+    console.error('Doctor Dashboard Error:', error);
+    res.status(500).json({ message: 'Failed to load doctor dashboard' });
   }
 };

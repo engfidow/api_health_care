@@ -8,9 +8,11 @@ const {
   deleteAppointment,
   getAppointmentsByUserId,
   getAppointmentReport,
+  getAppointmentsByDoctorUserId,
 } = require('../controllers/appointmentController');
 
 // Routes
+router.get('/doctor/user/:userId', getAppointmentsByDoctorUserId);
 router.post('/', createAppointment);
 router.get('/', getAppointments);
 router.get('/:id', getAppointmentById);
@@ -20,3 +22,4 @@ router.get('/user/:userId', getAppointmentsByUserId);
 
 router.get('/report/:range', getAppointmentReport);
 module.exports = router;
+

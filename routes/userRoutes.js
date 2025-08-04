@@ -1,21 +1,21 @@
-import express from 'express';
-import upload from '../middlewares/upload.js';
-import {
+const express = require('express');
+const upload = require('../middlewares/upload.js');
+const {
   registerUser,
   getUsers,
   getUserById,
   updateUser,
   deleteUser,
   loginUser
-} from '../controllers/userController.js';
+} = require('../controllers/userController.js');
 
 const router = express.Router();
 
 router.post('/register', upload.single('image'), registerUser);
-router.post('/login', loginUser); // Add this line
+router.post('/login', loginUser);
 router.get('/', getUsers);
 router.get('/:id', getUserById);
 router.put('/:id', upload.single('image'), updateUser);
 router.delete('/:id', deleteUser);
 
-export default router;
+module.exports = router;

@@ -1,6 +1,6 @@
-import User from '../models/user.js';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+const User = require('../models/user.js');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 // Generate JWT
 const generateToken = (userId) => {
@@ -10,7 +10,7 @@ const generateToken = (userId) => {
 };
 
 // CREATE
-export const registerUser = async (req, res) => {
+const registerUser = async (req, res) => {
   try {
     const { fullName, email, password, role } = req.body;
     const image = req.file?.filename;
@@ -42,7 +42,7 @@ export const registerUser = async (req, res) => {
 };
 
 // READ ALL
-export const getUsers = async (req, res) => {
+const getUsers = async (req, res) => {
   try {
     const users = await User.find().sort({ createdAt: -1 });
     res.json(users);
@@ -52,7 +52,7 @@ export const getUsers = async (req, res) => {
 };
 
 // READ ONE
-export const getUserById = async (req, res) => {
+const getUserById = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ message: 'User not found' });
@@ -63,9 +63,8 @@ export const getUserById = async (req, res) => {
 };
 
 // UPDATE
-export const updateUser = async (req, res) => {
+const updateUser = async (req, res) => {
   try {
-    console.log(req.body)
     const { fullName, email, role } = req.body;
     const image = req.file?.filename;
 
@@ -85,7 +84,7 @@ export const updateUser = async (req, res) => {
 };
 
 // DELETE
-export const deleteUser = async (req, res) => {
+const deleteUser = async (req, res) => {
   try {
     const removed = await User.findByIdAndDelete(req.params.id);
     if (!removed) return res.status(404).json({ message: 'User not found' });
@@ -95,9 +94,8 @@ export const deleteUser = async (req, res) => {
   }
 };
 
-
 // LOGIN
-export const loginUser = async (req, res) => {
+const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -121,4 +119,14 @@ export const loginUser = async (req, res) => {
     console.error('Login Error:', error.message);
     res.status(500).json({ message: 'Server Error' });
   }
+};
+
+// Export all functions
+module.exports = {
+  registerUser,
+  getUsers,
+  getUserById,
+  updateUser,
+  deleteUser,
+  loginUser,
 };

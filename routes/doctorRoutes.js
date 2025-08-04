@@ -1,13 +1,13 @@
-import express from 'express';
-import {
+const express = require('express');
+const {
   createDoctor,
   getDoctors,
   getDoctorById,
   updateDoctor,
   deleteDoctor,
-} from '../controllers/doctorController.js';
+} = require('../controllers/doctorController.js');
 
-import multer from 'multer';
+const multer = require('multer');
 const router = express.Router();
 
 // Multer setup
@@ -29,4 +29,4 @@ router.get('/:id', getDoctorById);
 router.put('/:id', upload.single('image'), updateDoctor);
 router.delete('/:id', deleteDoctor);
 
-export default router;
+module.exports = router;
