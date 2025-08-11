@@ -81,9 +81,9 @@ const updateDoctor = async (req, res) => {
     } = req.body;
     const newImage = req.file?.filename;
 
-    if (newImage && doctor.image) {
-      fs.unlinkSync(path.join('uploads', doctor.image)); // delete old image
-    }
+    // if (newImage && doctor.image) {
+    //   fs.unlinkSync(path.join('uploads', doctor.image)); // delete old image
+    // }
 
     doctor.name = name || doctor.name;
     doctor.specialization = specialization || doctor.specialization;
@@ -94,6 +94,7 @@ const updateDoctor = async (req, res) => {
     doctor.image = newImage || doctor.image;
     doctor.appointmentprice = appointmentprice || doctor.appointmentprice;
     doctor.language = language || doctor.language;
+    doctor.userId = doctor.userId;
 
     await doctor.save();
     res.status(200).json({ message: 'Doctor updated successfully', doctor });
